@@ -1,0 +1,125 @@
+/* ---- map ----------------------------------------------------------------- */
+.map-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+}
+#map {
+  height: 72vh;
+  min-height: 420px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #a9c9e4;
+}
+.map-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.map-panel label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+#year-controls { display: grid; gap: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+#year-controls[hidden] { display: none; }
+.legend { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 4px;
+  vertical-align: -2px; }
+.sw.trench { border-radius: 2px; height: 4px; background: var(--bad); vertical-align: 3px; }
+.sw.fault { border-radius: 2px; height: 4px; background: var(--gold); vertical-align: 3px; }
+.sw.hist { background: rgba(255, 106, 61, .5); border: 2px solid var(--magma); }
+.sw.shallow { background: #ffe066; }
+.sw.mid { background: #ff922b; }
+.sw.deep { background: #c2255c; }
+
+/* Leaflet vector styles (className on paths) */
+.trench { stroke: var(--bad); stroke-dasharray: 14 8; animation: flow 1.2s linear infinite; }
+.trench.focus { stroke: #ff2a3d; filter: drop-shadow(0 0 4px #ff2a3d); }
+.fault { stroke: var(--gold); stroke-dasharray: 4 6; }
+.quake-hist { stroke: var(--magma); fill: var(--magma); fill-opacity: .45; }
+.quake-hist:hover { fill-opacity: .8; }
+.quake-live { stroke: #111; stroke-width: 1; fill-opacity: .85; }
+.quake-live.shallow { fill: #ffe066; }
+.quake-live.mid { fill: #ff922b; }
+.quake-live.deep { fill: #c2255c; }
+@keyframes flow { to { stroke-dashoffset: -22; } }
+.volcano { color: #c92a2a; font-size: 18px; text-shadow: 0 0 3px #fff; line-height: 1;
+  transform: translate(-50%, -50%); cursor: pointer; }
+.plate-lbl {
+  color: #0b1020;
+  font: 12px/1.2 var(--head);
+  text-align: center;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+.plate-lbl b, .plate-lbl small { display: block; }
+.plate-lbl .arrow { display: block; font-size: 34px; color: #c92a2a; animation: push 1.6s ease-in-out infinite; }
+@keyframes push { 50% { transform: translateX(6px); } }
+.leaflet-popup-content { font: 14px/1.45 Inter, sans-serif; }
+.leaflet-popup-content p { margin: .5em 0 0; }
+
+/* ---- 3D model ------------------------------------------------------------ */
+.model-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+}
+#model-canvas {
+  position: relative;
+  height: 72vh;
+  min-height: 420px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  cursor: grab;
+}
+#model-canvas canvas { display: block; }
+#model-canvas .labels { position: absolute; inset: 0; }
+.lbl {
+  font: 600 13px var(--head);
+  color: #fff;
+  background: rgba(11, 16, 32, .72);
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.lbl.hot { color: #ffb199; }
+.lbl.dir { background: none; color: var(--muted); letter-spacing: .15em; }
+.model-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#model-caption { min-height: 9.5em; }
+#model-caption h3 { color: var(--gold); font-size: 1.4rem; }
+.model-controls { display: flex; gap: 12px; align-items: center; }
+.model-controls button { flex: none; min-width: 6.5em; }
+#model-phases { display: flex; flex-direction: column; gap: 8px; }
+#model-phases button { text-align: left; border-radius: 10px; }
+#model-phases button.active {
+  background: var(--magma);
+  border-color: var(--magma);
+  color: #1a0a04;
+  font-weight: 700;
+}
+
+/* ---- phones and tablets -------------------------------------------------- */
+@media (max-width: 960px) {
+  .map-wrap, .model-wrap { grid-template-columns: 1fr; }
+  #model-canvas { height: 58vh; min-height: 340px; }
+  #model-caption { min-height: 0; }
+  #model-phases { flex-direction: row; flex-wrap: wrap; }
+}
+@media (max-width: 640px) {
+  #map { height: 60vh; min-height: 360px; }
+  #model-canvas { height: 38vh; min-height: 260px; }
+  .lbl { font-size: 10px; padding: 2px 5px; }
+  .plate-lbl small { display: none; }
+}
+

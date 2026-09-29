@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Where Plates Collide</title>
+  <meta name="description" content="An interactive model of the Philippine Trench subduction zone and why the Philippines is so prone to earthquakes.">
+  <meta name="theme-color" content="#0b1020">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="viz.css">
+  <link rel="stylesheet" href="graphics.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <nav id="dots" aria-label="Sections"></nav>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" data-title="Title">
+      <canvas id="seismo" aria-hidden="true"></canvas>
+      <div class="hero-text">
+        <p class="eyebrow">Modeling Earth's Dynamic Processes · Challenge 3</p>
+        <h1>Where Plates <span class="hot">Collide</span></h1>
+        <p class="lead">The Philippine Trench, the subduction zone behind the Philippines'
+          strongest earthquakes, and why the country shakes so often.</p>
+        <p class="byline">Presented by Group ___</p>
+        <p class="hint"><kbd>↓</kbd> / <kbd>→</kbd> next slide · <kbd>F</kbd> fullscreen</p>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section id="setting" data-title="Tectonic map">
+      <header class="reveal">
+        <p class="eyebrow">1 · The setting</p>
+        <h2>A country built on a collision</h2>
+        <p>The Philippines sits on the <b>Pacific Ring of Fire</b>, trapped between two big plates
+          pushing toward each other. Oceanic plates sink (<b>subduct</b>) under the islands at
+          <b>trenches</b> on both sides. The biggest and most active is the
+          <b class="hot">Philippine Trench</b> in the east. Tap any line, dot or volcano.</p>
+      </header>
+      <div class="map-wrap reveal">
+        <div id="map" role="application" aria-label="Tectonic map of the Philippines"></div>
+        <div class="map-panel">
+          <label><input type="checkbox" data-layer="tectonics" checked> Trenches &amp; faults</label>
+          <label><input type="checkbox" data-layer="volcanoes" checked> Volcanoes</label>
+          <label><input type="checkbox" data-layer="historic" checked> Major past quakes</label>
+          <label><input type="checkbox" data-layer="live"> Live quakes (last 30 days)</label>
+          <div id="year-controls">
+            <label for="year">Show quakes up to <output id="year-out">2026</output></label>
+            <input id="year" type="range" min="1900" max="2026" value="2026">
+            <button id="year-play" type="button">▶ Play history</button>
+          </div>
+          <p id="live-status" class="small" aria-live="polite"></p>
+          <ul class="legend small">
+            <li><i class="sw trench"></i> Subduction trench</li>
+            <li><i class="sw fault"></i> Major fault</li>
+            <li><i class="sw hist"></i> Past quake (size = magnitude)</li>
+            <li><i class="sw shallow"></i><i class="sw mid"></i><i class="sw deep"></i>
+              Live quake depth: shallow → deep</li>
+          </ul>
+          <p class="small muted">Tip: turn on live quakes. The deep ones sit further from the
+            trench, above the sinking slab.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3D MODEL -->
+    <section id="model" data-title="3D model">
+      <header class="reveal">
+        <p class="eyebrow">2 · The model</p>
+        <h2>Inside the Philippine Trench</h2>
+        <p>A slice through the Earth at the Philippine Trench. Drag to rotate, or jump to a step.</p>
+      </header>
+      <div class="model-wrap">
+        <div id="model-canvas"></div>
+        <aside class="model-panel">
+          <div id="model-caption" aria-live="polite"><h3>1. Plates converge</h3><p></p></div>
+          <div class="model-controls">
+            <button id="model-play" type="button" aria-pressed="false">▶ Play</button>
+            <input id="model-scrub" type="range" min="0" step="0.01" value="0" aria-label="Timeline">
+          </div>
+          <div id="model-phases"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- SUSCEPTIBILITY -->
+    <section id="risk" data-title="Why so many quakes">
+      <header class="reveal">
+        <p class="eyebrow">3 · Susceptibility</p>
+        <h2>Why the Philippines shakes so much</h2>
+      </header>
+      <div class="stats reveal">
+        <div><b data-count="20">0</b><span>earthquakes recorded per day on average (PHIVOLCS)</span></div>
+        <div><b data-count="6">0</b><span>subduction trenches around the islands</span></div>
+        <div><b data-count="1200">0</b><span>km-long Philippine Fault through the country</span></div>
+        <div><b data-count="24">0</b><span>active volcanoes (PHIVOLCS)</span></div>
+      </div>
+      <div class="cards">
+        <article class="reveal"><h3>Squeezed from both sides</h3>
+          <p>Subduction zones on <b>opposite sides</b> face each other: the Philippine Trench in the
+            east and the Manila, Negros, Sulu and Cotabato trenches in the west. The islands are
+            crushed in between, so the crust is broken by many faults.</p></article>
+        <article class="reveal"><h3>Fast-moving plates</h3>
+          <p>The Philippine Sea Plate moves several centimeters a year toward the islands.
+            Every year of movement adds stress that is released in earthquakes.</p></article>
+        <article class="reveal"><h3>Tsunamis from the trenches</h3>
+          <p>Subduction quakes happen under the sea and can lift the seafloor. The 1976 Moro Gulf
+            tsunami killed thousands of people in minutes.</p></article>
+        <article class="reveal"><h3>People live on the faults</h3>
+          <p>Over 110 million Filipinos live on the coasts or near active faults. The West Valley
+            Fault runs right under Metro Manila.</p></article>
+        <article class="reveal"><h3>Ranked #1 for disaster risk</h3>
+          <p>The WorldRiskReport ranked the Philippines the <b>most at-risk country</b> in the
+            world to natural hazards in 2022, 2023 and 2024.</p></article>
+        <article class="reveal"><h3>Earthquakes + volcanoes</h3>
+          <p>The same subduction that causes the quakes also melts the mantle and feeds volcanoes
+            like Mayon, Taal, Pinatubo and Kanlaon.</p></article>
+      </div>
+    </section>
+
+    <!-- MAGNITUDE SCALE -->
+    <section id="scale" data-title="Magnitude scale">
+      <header class="reveal">
+        <p class="eyebrow">4 · Magnitude</p>
+        <h2>How much stronger is a bigger quake?</h2>
+        <p>Each step up in magnitude releases about <b>32 times</b> more energy. Two steps is
+          about <b>1,000 times</b>. Slide or tap a level to see what it does.</p>
+      </header>
+      <div class="scale-wrap reveal">
+        <div class="scale-main">
+          <div id="scene" class="scene"></div>
+          <div class="scale-controls">
+            <label for="mag">Magnitude <output id="mag-out">7.0</output>
+              <span id="mag-name" class="mag-name"></span></label>
+            <button id="scene-shake" type="button">〰 Shake</button>
+          </div>
+          <input id="mag" type="range" min="4" max="9" step="0.1" value="7">
+          <p id="mag-effect" class="mag-effect" aria-live="polite"></p>
+          <p class="small">Releases about <b id="mag-vs"></b>× the energy of an M4.0, roughly
+            <b id="mag-tnt"></b> tonnes of TNT.</p>
+        </div>
+        <ol id="mag-ladder" class="ladder" aria-label="Magnitude levels"></ol>
+      </div>
+      <p class="small muted reveal">Magnitude is the energy released at the source. How hard the
+        ground shakes where you are (intensity) also depends on distance and depth.</p>
+    </section>
+
+    <!-- SAFETY -->
+    <section id="safety" data-title="Stay safe">
+      <header class="reveal">
+        <p class="eyebrow">5 · Be ready</p>
+        <h2>When the ground shakes</h2>
+      </header>
+      <div class="cards three">
+        <article class="reveal step">
+          <svg class="pose" viewBox="0 0 160 100" role="img"
+            aria-label="Person dropping down onto hands and knees">
+            <path class="floor" d="M8 90 H152"/>
+            <path class="cue" d="M72 8 v22 m-8 -8 l8 8 8 -8"/>
+            <circle class="head" cx="38" cy="52" r="9"/>
+            <path class="body" d="M50 57 L95 59 M54 58 L50 88 M95 59 L100 88 L128 88"/>
+          </svg>
+          <span>1</span><h3>DROP</h3><p>Get down on your hands and knees before the shaking
+            knocks you down.</p>
+        </article>
+        <article class="reveal step">
+          <svg class="pose" viewBox="0 0 160 100" role="img"
+            aria-label="Person crouching under a table, covering their head">
+            <path class="floor" d="M8 90 H152"/>
+            <g class="table"><rect x="20" y="30" width="120" height="8" rx="2"/>
+              <rect x="28" y="38" width="7" height="52"/><rect x="125" y="38" width="7" height="52"/></g>
+            <circle class="head" cx="60" cy="76" r="9"/>
+            <path class="body" d="M68 70 L98 62 L92 88 L116 88 M70 68 L64 58 L54 66"/>
+          </svg>
+          <span>2</span><h3>COVER</h3><p>Get under a sturdy table. Protect your head and neck
+            from falling objects.</p>
+        </article>
+        <article class="reveal step">
+          <svg class="pose" viewBox="0 0 160 100" role="img"
+            aria-label="Person under a shaking table, holding on to its leg">
+            <path class="floor" d="M8 90 H152"/>
+            <g class="table wobble"><rect x="20" y="30" width="120" height="8" rx="2"/>
+              <rect x="28" y="38" width="7" height="52"/><rect x="125" y="38" width="7" height="52"/></g>
+            <path class="cue" d="M12 24 l-6 -6 M10 34 h-8 M148 24 l6 -6 M150 34 h8"/>
+            <circle class="head" cx="54" cy="76" r="9"/>
+            <path class="body" d="M62 70 L92 62 L86 88 L110 88 M60 68 L46 60 L36 58
+              M66 67 L60 58 L50 62"/>
+          </svg>
+          <span>3</span><h3>HOLD ON</h3><p>Hold on to the table until the shaking stops. Then
+            evacuate calmly.</p>
+        </article>
+      </div>
+      <p class="callout reveal"><b>Near the coast?</b> Strong shaking or the sea suddenly pulling
+        back are natural tsunami warnings. Go to high ground right away. Don't wait for an alert.</p>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz-sec" data-title="Quiz">
+      <header class="reveal">
+        <p class="eyebrow">6 · Check yourself</p>
+        <h2>Quick quiz</h2>
+        <p><span id="quiz-score">Score: 0 / 0</span>
+          <button id="quiz-reset" type="button" class="ghost">Reset</button></p>
+      </header>
+      <div id="quiz" class="quiz"></div>
+    </section>
+
+    <!-- SOURCES -->
+    <section id="sources" data-title="Sources">
+      <header class="reveal">
+        <p class="eyebrow">References</p>
+        <h2>Sources</h2>
+      </header>
+      <ul class="sources reveal">
+        <li>PHIVOLCS: Philippine Institute of Volcanology and Seismology, phivolcs.dost.gov.ph</li>
+        <li>USGS Earthquake Hazards Program: event catalog and live data API, earthquake.usgs.gov</li>
+        <li>USGS: Tectonic summary of the Philippine Sea Plate region</li>
+        <li>WorldRiskReport 2022–2024, Bündnis Entwicklung Hilft / IFHV</li>
+        <li>MMEIRS: Metro Manila Earthquake Impact Reduction Study (JICA, MMDA, PHIVOLCS, 2004)</li>
+        <li>Map tiles: Esri Ocean Basemap (GEBCO, NOAA and others). 3D model: three.js</li>
+      </ul>
+      <p class="small muted reveal">Trench and fault lines are simplified. The 3D model is not to scale.</p>
+    </section>
+  </main>
+
+  <script type="module" src="js/quiz.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/quake-scale.js"></script>
+  <script type="module" src="js/map.js"></script>
+  <script type="module" src="js/model.js"></script>
+</body>
+</html>
