@@ -32,3 +32,13 @@
   levels in data.js MAG_LEVELS. Old energy bar removed from main.js/style.css.
 - Drop/Cover/Hold On cards now have inline SVG figures (Hold On table wobbles).
 - Sections renumbered (safety 5, quiz 6). Verified desktop + phone screenshots, no errors.
+
+## 2026-09-29 — Deployed
+- Committed on feat/docs-subduction-site, branched staging + main, pushed. GitHub Pages serves
+  main (root): https://aguynamedkent7.github.io/Nicho-website/ (verified live, no errors).
+- instructions.jpg is gitignored (phone photo with personal thumbnails).
+- To update the site: commit on a branch, merge to staging, then main; Pages rebuilds in ~1 min.
+
+## 2026-09-29 — README
+- Added README.md for the presenter: open/clone/download, local server note, changing the
+  group name (GitHub web editor), slide-by-slide presenting guide, file map.
